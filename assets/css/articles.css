@@ -1,0 +1,19 @@
+#recent, #index, #details, #add, #addNote, #updateNote
+{
+  display: none;
+}
+
+#inputContent, #inputTitle, #updateContent, #updateTitle
+{
+  width: 65%;
+}
+
+caption
+{
+  text-align:left;
+}
+
+.indexTitle
+{
+  width: 60%;
+}

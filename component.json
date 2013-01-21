@@ -1,0 +1,10 @@
+{
+  "name": "wlion",
+  "version": "1.0.0",
+  "main": ["./app.css", "./app.js", "./sprite.img"],
+  "dependencies": {
+    "jquery": ">=1.7.2",
+    "datejs": "*",
+    "bootstrap": "*"
+  }
+}
