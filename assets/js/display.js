@@ -1,5 +1,5 @@
 (function() {
-  var hideAll, recentLinkAction, showDetails;
+  var addArticle, deleteArticle, hideAll, recentLinkAction, showDetails, updateArticle;
 
   hideAll = function() {
     $("#recent").hide();
@@ -43,7 +43,7 @@
     $("#recentCells").empty();
     return $.post("./dostuff.php?action=recent", function(data) {
       return $.each($.parseJSON(data), function() {
-        this.updated = this.updated === "0000-00-00 00:00:00" ? "never" : Date.parse(this.updated).toString('hh:mm:ss tt - MM.dd.yy');
+        this.updated = this.updated === this.created ? "never" : Date.parse(this.updated).toString('hh:mm:ss tt - MM.dd.yy');
         this.created = this.created === "0000-00-00 00:00:00" ? "never" : Date.parse(this.created).toString('hh:mm:ss tt - MM.dd.yy');
         $("#recentCells").append("<tr id=" + this.id + "><td>" + this.title + "</td><td>" + this.body.substring(0, 40) + "</td><td>" + this.created + "</td><td>" + this.updated + "</td></tr>");
         return $("#" + this.id).click(function() {
@@ -117,57 +117,75 @@
   */
 
 
+  addArticle = function(options) {
+    return $.post(options.url, {
+      title: options.title,
+      content: options.content
+    }, options.success);
+  };
+
   $("#addForm").submit(function() {
-    var content, form, title, url;
+    var form;
     event.preventDefault();
     form = $(this);
-    title = form.find('input[name="title"]').val();
-    content = form.find('textarea[name="content"]').val();
-    url = form.attr('action');
-    return $.post(url, {
-      title: title,
-      content: content
-    }, function(data) {
-      $(':input', '#addForm').not(':button, :submit, :reset, :hidden').val('').removeAttr('checked').removeAttr('selected');
-      return $("#addNote").fadeIn(400).delay(1200).fadeOut(400, function() {
-        hideAll();
-        return recentLinkAction();
-      });
+    return addArticle({
+      url: form.attr('action'),
+      title: form.find('input[name="title"]').val(),
+      content: form.find('textarea[name="content"]').val(),
+      success: function(data) {
+        $(':input', '#addForm').not(':button, :submit, :reset, :hidden').val('').removeAttr('checked').removeAttr('selected');
+        return $("#addNote").fadeIn(400).delay(1200).fadeOut(400, function() {
+          hideAll();
+          return recentLinkAction();
+        });
+      }
     });
   });
+
+  updateArticle = function(options) {
+    return $.post(options.url, {
+      title: options.title,
+      content: options.content,
+      id: options.oldData.id
+    }, options.success);
+  };
 
   $("#updateBtn").click(function() {
-    var content, form, oldData, title, url;
+    var form;
     event.preventDefault();
     form = $("#updateForm");
-    title = form.find('input[name="title"]').val();
-    content = form.find('textarea[name="content"]').val();
-    url = form.attr('action');
-    oldData = $("#updateForm").data("oldDetails");
-    return $.post(url, {
-      title: title,
-      content: content,
-      id: oldData.id
-    }, function(data) {
-      $(':input', '#addForm').not(':button, :submit, :reset, :hidden').val('').removeAttr('checked').removeAttr('selected');
-      return $("#updateNote").fadeIn(400).delay(1200).fadeOut(400, function() {
-        hideAll();
-        return recentLinkAction();
-      });
+    return updateArticle({
+      url: form.attr('action'),
+      title: form.find('input[name="title"]').val(),
+      content: form.find('textarea[name="content"]').val(),
+      oldData: form.data("oldDetails"),
+      success: function(data) {
+        $(':input', '#addForm').not(':button, :submit, :reset, :hidden').val('').removeAttr('checked').removeAttr('selected');
+        return $("#updateNote").fadeIn(400).delay(1200).fadeOut(400, function() {
+          hideAll();
+          return recentLinkAction();
+        });
+      }
     });
   });
 
+  deleteArticle = function(options) {
+    return $.post("./dostuff.php?action=delete", {
+      id: options.oldData.id
+    }, options.success);
+  };
+
   $("#deleteBtn").click(function() {
-    var form, oldData;
+    var form;
     event.preventDefault();
     form = $("#updateForm");
-    oldData = $("#updateForm").data("oldDetails");
-    return $.post("./dostuff.php?action=delete", {
-      id: oldData.id
-    }, function(data) {
-      $(':input', '#addForm').not(':button, :submit, :reset, :hidden').val('').removeAttr('checked').removeAttr('selected');
-      hideAll();
-      return recentLinkAction();
+    return deleteArticle({
+      oldData: $(form).data("oldDetails"),
+      success: function(data) {
+        $(':input', '#addForm').not(':button, :submit, :reset, :hidden').val('').removeAttr('checked').removeAttr('selected');
+        hideAll();
+        return recentLinkAction();
+      }
     });
   });
 
