@@ -7,88 +7,76 @@ class Article extends Connect
     parent::__construct();
   }
 
-  function sanitize($input)
-  {
-    $input = trim($input);
-
-    if(get_magic_quotes_gpc())
-    {
-        $input = stripslashes($input);
-    } 
-
-    $input = mysql_real_escape_string($input);
-    $input = htmlentities($input);
-
-    return $input;
-  }
-
   function detail($id)
   {
-    $id = $this->sanitize($id);
-    $result = $this->conn->query("SELECT * FROM `article` WHERE id = $id");
-    if ($result) 
+    $query = $this->conn->prepare("SELECT * FROM `article` WHERE id = $id");
+    $query->bindValue(':id', (int) $id);
+    $query->execute();
+    $articles = array();
+    while ($row = $query->fetch(PDO::FETCH_OBJ))
     {
-      $articles = array();
-      while ($row = $result->fetch_assoc())
-      {
-        $articles[] = $row;
-      }
+      $articles[] = $row;
     }
-    if(!empty($articles)) { return $articles; }
+   
+    return $articles;
   }
 
   function index($data)
   {
-    $data['offset'] = $this->sanitize($data['offset']);
-    $result = $this->conn->query("SELECT * FROM `article` ORDER BY `created` DESC LIMIT 10 OFFSET ".$data['offset']);
-    if ($result) 
-    {
+    try {
+      $query = $this->conn->prepare('SELECT * FROM `article` ORDER BY `created` DESC LIMIT 10 OFFSET :offset');
+      $query->bindValue(':offset', (int) $data['offset'], PDO::PARAM_INT);
+      $query->execute();
       $articles = array();
-      while ($row = $result->fetch_assoc())
+      while ($row = $query->fetch(PDO::FETCH_OBJ))
       {
         $articles[] = $row;
       }
     }
-    if(!empty($articles)) { return $articles; }
+    catch(PDOException $e) { echo 'Error: ' . $e->getMessage(); }
+    return $articles; 
   }
 
   function recent()
   {
-    $result = $this->conn->query("SELECT * FROM `article` ORDER BY `updated` DESC LIMIT 5");
-    if ($result) 
+    $query = $this->conn->prepare("SELECT * FROM `article` ORDER BY `updated` DESC LIMIT 5");
+    $query->execute();
+    $articles = array();
+    while ($row = $query->fetch())
     {
-      $articles = array();
-      while ($row = $result->fetch_assoc())
-      {
-        $articles[] = $row;
-      }
+      $articles[] = $row;
     }
-    if(!empty($articles)) { return $articles; }
+    return $articles;
   }
 
   function add($data)
   {
-    $data['title'] = $this->sanitize($data['title']);
-    $data['content'] = $this->sanitize($data['content']);
-    $result = $this->conn->query("INSERT INTO article (title, body, created) VALUES ('".$data['title']."','".$data['content']."',NOW())");
+    $query = $this->conn->prepare('INSERT INTO article (title, body, created) VALUES (:title,:content,NOW())');
+    $query->bindValue(':title', $data['title']);
+    $query->bindValue(':content', $data['content']);
+    $query->execute();
     
-    return $result;
+    return $query->rowCount();
   }
 
   function update($data)
   {
-    $data['title'] = $this->sanitize($data['title']);
-    $data['content'] = $this->sanitize($data['content']);
-    $result = $this->conn->query("update article set title='".$data['title']."', body='".$data['content']."' WHERE id=".$data['id']);
+    $query = $this->conn->prepare('update article set title=:title, body=:content WHERE id=:id');
+    $query->bindValue(':id', $data['id']);
+    $query->bindValue(':title', $data['title']);
+    $query->bindValue(':content', $data['content']);
+    $query->execute();
     
-    return $result;
+    return $query->rowCount();
   }
 
   function del($data)
   {
-    $result = $this->conn->query("DELETE FROM article WHERE id = '".$data['id']."'");
+    $query = $this->conn->prepare('DELETE FROM `article` WHERE id=:id');
+    $query->bindValue(':id', $data['id']);
+    $query->execute();
     
-    return $result;
+    return $query->rowCount();
   }
   
   function __destruct()
