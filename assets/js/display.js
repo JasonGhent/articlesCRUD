@@ -41,13 +41,13 @@
     hideAll();
     $("#recent").show();
     $("#recentCells").empty();
-    return $.post("./dostuff.php?action=recent", function(data) {
+    return $.post("routes/dostuff.php?action=recent", function(data) {
       return $.each($.parseJSON(data), function() {
         this.updated = this.updated === this.created ? "never" : Date.parse(this.updated).toString('hh:mm:ss tt - MM.dd.yy');
         this.created = this.created === "0000-00-00 00:00:00" ? "never" : Date.parse(this.created).toString('hh:mm:ss tt - MM.dd.yy');
         $("#recentCells").append("<tr id=" + this.id + "><td>" + this.title + "</td><td>" + this.body.substring(0, 40) + "</td><td>" + this.created + "</td><td>" + this.updated + "</td></tr>");
         return $("#" + this.id).click(function() {
-          return $.post("./dostuff.php?action=detail", {
+          return $.post("routes/dostuff.php?action=detail", {
             id: this.id
           }, function(data) {
             return showDetails(data);
@@ -61,7 +61,7 @@
     $("#main").hide();
     hideAll();
     $("#index").show();
-    return $.post("./dostuff.php?action=index", {
+    return $.post("routes/dostuff.php?action=index", {
       offset: 0
     }, function(data) {
       $("#indexCells").empty();
@@ -70,7 +70,7 @@
         this.created = this.created === "0000-00-00 00:00:00" ? "never" : Date.parse(this.created).toString('hh:mm:ss tt - MM.dd.yy');
         $("#indexCells").append("<tr id=" + this.id + "><td class=\"indexTitle\">" + this.title + "</td><td>" + this.created + "</td><td>" + this.updated + "</td></tr>");
         return $("#" + this.id).click(function() {
-          return $.post("./dostuff.php?action=detail", {
+          return $.post("routes/dostuff.php?action=detail", {
             id: this.id
           }, function(data) {
             return showDetails(data);
@@ -96,7 +96,7 @@
         this.created = this.created === "0000-00-00 00:00:00" ? "never" : Date.parse(this.created).toString('hh:mm:ss tt - MM.dd.yy');
         $("#indexCells").append("<tr id=" + this.id + "><td class=\"indexTitle\">" + this.title + "</td><td>" + this.created + "</td><td>" + this.updated + "</td></tr>");
         return $("#" + this.id).click(function() {
-          return $.post("./dostuff.php?action=detail", {
+          return $.post("routes/dostuff.php?action=detail", {
             id: this.id
           }, function(data) {
             return showDetails(data);
@@ -170,7 +170,7 @@
   });
 
   deleteArticle = function(options) {
-    return $.post("./dostuff.php?action=delete", {
+    return $.post("routes/dostuff.php?action=delete", {
       id: options.oldData.id
     }, options.success);
   };
