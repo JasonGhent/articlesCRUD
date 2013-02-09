@@ -1,5 +1,5 @@
 <?php
-include "./classes/connect.class.php";
+include "connect.class.php";
 class Article extends Connect
 {
   function __construct()
