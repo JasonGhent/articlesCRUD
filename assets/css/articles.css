@@ -13,6 +13,12 @@ caption
   text-align:left;
 }
 
+#updateBtn, #deleteBtn
+{
+  margin-right: 50px;
+  float: left;
+}
+
 .indexTitle
 {
   width: 60%;

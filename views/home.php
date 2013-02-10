@@ -128,7 +128,7 @@
         </tbody>
       </table>
       <form id="setOffset" class="form-horizontal" action="routes/dostuff.php?action=index">
-        <button name="prev" type="submit" id="prev" value="0" class="btn">Prev</button>
+        <button name="prev" type="submit" id="prev" value="-10" class="btn">Prev</button>
         <button name="next" type="submit" id="next" value="10" class="btn">Next</button>
       </form>
 
@@ -153,7 +153,9 @@
           </div>
           <div class="form-actions">
             <button type="submit" class="btn btn-inverse" id="updateBtn">Submit</button>
-            <button type="submit" class="btn btn-danger" id="deleteBtn" style="float:right;">Delete</button>
+      </form>
+      <form id="deleteForm" class="form-inline" action="routes/dostuff.php?action=delete">
+            <button type="submit" class="btn btn-danger" id="deleteBtn">Delete</button>
             <div id="updateNote">Data submitted.</div>
           </div>
         </fieldset>
@@ -188,6 +190,8 @@
     </div> <!-- /container -->
 
     <script src="./components/jquery/jquery.js"></script>
+    <script src="./components/underscore/underscore.js"></script>
+    <script src="./components/backbone/backbone.js"></script>
     <script type='text/javascript' src='./components/datejs/src/globalization/en-US.js'></script>
     <script type='text/javascript' src='./components/datejs/src/core.js'></script>
     <script type='text/javascript' src='./components/datejs/src/sugarpak.js'></script>

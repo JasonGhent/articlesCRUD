@@ -28,7 +28,7 @@ class Article extends Connect
       $query->bindValue(':offset', (int) $data['offset'], PDO::PARAM_INT);
       $query->execute();
       $articles = array();
-      while ($row = $query->fetch(PDO::FETCH_OBJ))
+      while ($row = $query->fetch(PDO::FETCH_ASSOC))
       {
         $articles[] = $row;
       }
@@ -42,7 +42,7 @@ class Article extends Connect
     $query = $this->conn->prepare("SELECT * FROM `article` ORDER BY `updated` DESC LIMIT 5");
     $query->execute();
     $articles = array();
-    while ($row = $query->fetch())
+    while ($row = $query->fetch(PDO::FETCH_ASSOC))
     {
       $articles[] = $row;
     }
